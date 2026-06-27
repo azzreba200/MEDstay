@@ -16,8 +16,8 @@ if ($isLocal) {
 } else {
     // ---- Live (Hostinger) ----
     $host     = '127.0.0.1';
-    $username = 'u119737814_Admain_zero';
-    $password = 'ZERO4224Zero';
+    $username = 'u119737814_Admain_ddd';
+    $password = 'ddeesff4242;
     $database = 'u119737814_medstay';
 }
 
