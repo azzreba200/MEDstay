@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>MEDSTAY — How We Built It</title>
+<style>
+  :root{
+    --navy:#0B1F3A; --navy-mid:#152D50; --navy-light:#1E3F6F;
+    --gold:#C8A96E; --gold-light:#E2C997; --gold-pale:#F8F2E6;
+    --white:#fff; --cream:#F9F7F4; --off:#F7F8FC; --gray:#8A95A3;
+    --ink:#243044; --line:#e3e7ef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{font-family:'Segoe UI',system-ui,sans-serif;color:var(--ink);font-size:13px;line-height:1.62;}
+  /* page setup for print */
+  @page{ size:A4; margin:18mm 16mm; }
+  .page{ page-break-after:always; }
+  .page:last-child{ page-break-after:auto; }
+  h1,h2,h3{ font-family:'Segoe UI Semibold','Segoe UI',sans-serif; color:var(--navy); line-height:1.25; }
+  h2{ font-size:1.45rem; margin:0 0 4px; padding-bottom:8px; border-bottom:3px solid var(--gold); }
+  h2 .num{ color:var(--gold); font-weight:700; margin-right:10px; }
+  h3{ font-size:1.05rem; margin:20px 0 8px; color:var(--navy-light); }
+  p{ margin:0 0 10px; }
+  ul,ol{ margin:0 0 12px 20px; } li{ margin-bottom:5px; }
+  code{ font-family:'Cascadia Code',Consolas,monospace; background:var(--gold-pale); color:#7a5a1e;
+        padding:1px 5px; border-radius:4px; font-size:.86em; }
+  .lead{ color:var(--gray); }
+  .tag{ display:inline-block; background:var(--navy); color:#fff; font-size:.72rem; letter-spacing:.5px;
+        padding:3px 10px; border-radius:20px; margin:0 5px 5px 0; }
+  .tag.gold{ background:var(--gold); color:var(--navy); }
+  table{ width:100%; border-collapse:collapse; margin:10px 0 16px; font-size:.86rem; }
+  th{ background:var(--navy); color:#fff; text-align:left; padding:8px 11px; font-weight:600; }
+  td{ padding:7px 11px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tr:nth-child(even) td{ background:var(--off); }
+  .callout{ background:var(--gold-pale); border-left:4px solid var(--gold); padding:11px 16px;
+            border-radius:0 8px 8px 0; margin:12px 0; }
+  .callout strong{ color:#8a6516; }
+  pre{ background:#0B1F3A; color:#e7ecf5; border-radius:10px; padding:15px 18px; overflow:hidden;
+       font-family:'Cascadia Code',Consolas,monospace; font-size:.78rem; line-height:1.55; margin:10px 0 16px;
+       white-space:pre-wrap; word-break:break-word; }
+  pre .k{ color:#E2C997; } pre .c{ color:#7e8aa0; font-style:italic; } pre .s{ color:#9ed6a8; }
+  .fig{ text-align:center; margin:14px 0 18px; }
+  .fig svg{ max-width:100%; height:auto; }
+  .figcap{ font-size:.78rem; color:var(--gray); margin-top:6px; font-style:italic; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .card{ border:1px solid var(--line); border-radius:10px; padding:13px 15px; background:#fff; }
+  .card h4{ color:var(--navy); font-size:.95rem; margin-bottom:5px; }
+  /* COVER */
+  .cover{ height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:flex-start;
+          background:linear-gradient(135deg,#0B1F3A 0%,#152D50 55%,#1E3F6F 100%); color:#fff;
+          padding:0 50px; border-radius:0; }
+  .cover .logo{ font-size:3.4rem; font-weight:700; letter-spacing:6px; color:#fff; }
+  .cover .logo span{ color:var(--gold); }
+  .cover .sub{ font-size:1.15rem; color:var(--gold-light); letter-spacing:3px; margin:6px 0 34px; text-transform:uppercase;}
+  .cover .title{ font-size:2.3rem; max-width:560px; line-height:1.25; color:#fff; margin-bottom:14px; }
+  .cover .desc{ color:#c4cee0; max-width:540px; font-size:1rem; }
+  .cover .meta{ margin-top:46px; font-size:.85rem; color:#90a0bd; border-top:1px solid rgba(200,169,110,.35); padding-top:16px;}
+  .cover .pills{ margin-top:22px; }
+  .cover .pills .tag{ background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(200,169,110,.4); }
+  footer.pg{ position:fixed; bottom:8mm; right:16mm; font-size:.7rem; color:var(--gray); }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="page cover">
+  <div class="logo">MED<span>STAY</span></div>
+  <div class="sub">Where Hosts Meet Guests</div>
+  <div class="title">How We Built MEDSTAY</div>
+  <div class="desc">A complete walkthrough of the design, architecture, database, and deployment
+  of a Libya-themed property-booking website — from an empty XAMPP folder to a live site at med-stay.xyz.</div>
+  <div class="pills">
+    <span class="tag">PHP 8</span><span class="tag">MySQL / MariaDB</span>
+    <span class="tag">Apache · XAMPP</span><span class="tag">Hostinger</span><span class="tag">Vanilla CSS</span>
+  </div>
+  <div class="meta">Technical build document &nbsp;·&nbsp; Generated June 2026 &nbsp;·&nbsp; Stack: LAMP (Windows-hosted dev)</div>
+</section>
+
+<!-- ============ 1. OVERVIEW ============ -->
+<section class="page">
+  <h2><span class="num">01</span>What MEDSTAY Is</h2>
+  <p class="lead">A booking platform for short-stay properties across Libya — guests browse curated
+  listings, view a property in detail, and reserve dates instantly; hosts submit new properties and
+  watch performance on a private dashboard.</p>
+
+  <h3>The core idea</h3>
+  <p>MEDSTAY is a server-rendered PHP website backed by a MySQL database. Every page that shows
+  property data — the homepage cards, the listings grid, the detail page, the dashboard — reads
+  live from the same three database tables. Nothing is hard-coded; editing a price means an
+  <code>UPDATE</code> in the database, not a code change.</p>
+
+  <h3>What a visitor can do</h3>
+  <ul>
+    <li><strong>Browse</strong> featured properties on the homepage and the full grid in <code>list.php</code>.</li>
+    <li><strong>Inspect</strong> a single property (photos, facts, description) on <code>property.php</code>.</li>
+    <li><strong>Book</strong> dates — with automatic protection against double-booking the same nights.</li>
+    <li><strong>Submit</strong> a property as a host, or send a message through the contact form.</li>
+  </ul>
+
+  <h3>What the owner can do</h3>
+  <ul>
+    <li>Open <code>dashboard.php</code> to see total revenue, bookings, messages, average rating,
+    recent reservations, and per-property performance — all computed with SQL aggregates.</li>
+  </ul>
+
+  <div class="callout"><strong>Design language:</strong> Libyan cities (Tripoli, Benghazi, Misrata) and
+  property types like <em>Courtyard House</em> and <em>Desert Camp</em>, dressed in a navy-and-gold palette
+  with Reem&nbsp;Kufi headings and Tajawal body text — both fonts carry Latin and Arabic glyphs, leaving
+  the door open for an Arabic / RTL version later.</p>
+
+  <h3>The site map</h3>
+  <div class="fig">
+    <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,sans-serif">
+      <!-- root -->
+      <rect x="290" y="10" width="140" height="40" rx="9" fill="#0B1F3A"/>
+      <text x="360" y="35" fill="#fff" font-size="14" font-weight="700" text-anchor="middle">index.php</text>
+      <!-- connectors -->
+      <g stroke="#C8A96E" stroke-width="2" fill="none">
+        <path d="M360 50 V70 H70 V95"/><path d="M360 50 V70 H230 V95"/>
+        <path d="M360 50 V95"/><path d="M360 50 V70 H490 V95"/><path d="M360 50 V70 H650 V95"/>
+      </g>
+      <!-- children -->
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="15" y="95" width="110" height="38" rx="8" fill="#1E3F6F"/><text x="70" y="119" fill="#fff">list.php</text>
+        <rect x="175" y="95" width="110" height="38" rx="8" fill="#1E3F6F"/><text x="230" y="119" fill="#fff">property.php</text>
+        <rect x="305" y="95" width="110" height="38" rx="8" fill="#1E3F6F"/><text x="360" y="119" fill="#fff">pricing /</text><text x="360" y="133" fill="#fff" font-size="0"> </text>
+        <rect x="435" y="95" width="110" height="38" rx="8" fill="#1E3F6F"/><text x="490" y="119" fill="#fff">resources</text>
+        <rect x="595" y="95" width="110" height="38" rx="8" fill="#1E3F6F"/><text x="650" y="119" fill="#fff">dashboard</text>
+      </g>
+      <!-- handlers -->
+      <g stroke="#8A95A3" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
+        <path d="M230 133 V160"/><path d="M70 133 V160"/><path d="M360 50 H170 V250" stroke="none"/>
+      </g>
+      <g font-size="11.5" text-anchor="middle">
+        <rect x="180" y="160" width="100" height="34" rx="8" fill="#C8A96E"/><text x="230" y="182" fill="#0B1F3A" font-weight="700">book.php</text>
+        <rect x="20" y="160" width="100" height="34" rx="8" fill="#C8A96E"/><text x="70" y="182" fill="#0B1F3A" font-weight="700">contact.php</text>
+      </g>
+      <text x="230" y="214" font-size="10.5" fill="#8A95A3" text-anchor="middle">form handler → DB insert</text>
+      <text x="70" y="214" font-size="10.5" fill="#8A95A3" text-anchor="middle">form handler → DB insert</text>
+      <!-- db.php note -->
+      <rect x="470" y="160" width="235" height="60" rx="9" fill="#F8F2E6" stroke="#C8A96E"/>
+      <text x="587" y="184" font-size="12" fill="#0B1F3A" text-anchor="middle" font-weight="700">db.php</text>
+      <text x="587" y="204" font-size="10" fill="#7a5a1e" text-anchor="middle">included by every page — one shared connection</text>
+    </svg>
+    <div class="figcap">Figure 1 — Page map. Solid lines are navigation; dashed lines are form submissions to handlers.</div>
+  </div>
+</section>
+
+<!-- ============ 2. STACK ============ -->
+<section class="page">
+  <h2><span class="num">02</span>The Technology Stack</h2>
+  <p class="lead">A deliberately classic LAMP-style stack — chosen because it runs unchanged on cheap
+  shared hosting and needs no build step.</p>
+
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Why it was chosen</th></tr>
+    <tr><td>Language</td><td>PHP 8.2</td><td>Server-side rendering, zero build tooling, runs everywhere.</td></tr>
+    <tr><td>Database</td><td>MySQL 8 / MariaDB 10.4</td><td>Relational data (properties ⇄ bookings) with foreign keys.</td></tr>
+    <tr><td>Web server</td><td>Apache (XAMPP) / LiteSpeed (live)</td><td>Bundled with XAMPP locally; LiteSpeed on Hostinger.</td></tr>
+    <tr><td>Front-end</td><td>Hand-written HTML + CSS</td><td>No framework — full control over the navy/gold look, tiny payload.</td></tr>
+    <tr><td>DB driver</td><td>mysqli (prepared statements)</td><td>Parameterised queries to block SQL injection.</td></tr>
+    <tr><td>Fonts</td><td>Reem Kufi + Tajawal (Google Fonts)</td><td>Latin + Arabic glyphs for a future RTL version.</td></tr>
+    <tr><td>Dev environment</td><td>XAMPP on Windows 11</td><td>Apache + MariaDB + phpMyAdmin in one install.</td></tr>
+    <tr><td>Production</td><td>Hostinger shared hosting</td><td>Files via File Manager, DB via phpMyAdmin.</td></tr>
+  </table>
+
+  <h3>No framework, on purpose</h3>
+  <p>There is no React, no Laravel, no npm. Each page is a single <code>.php</code> file that queries the
+  database at the top and prints HTML below it. The trade-off is more repetition, but the payoff is a
+  site that deploys by copying files — no compilation, no <code>node_modules</code>, no surprises on a
+  $3/month host.</p>
+
+  <h3>Where the code lives</h3>
+  <table>
+    <tr><th>File</th><th>Size</th><th>Role</th></tr>
+    <tr><td><code>index.php</code></td><td>~41 KB</td><td>Homepage: hero video, featured cards, contact form.</td></tr>
+    <tr><td><code>list.php</code></td><td>~30 KB</td><td>Full property grid + "list your property" host form.</td></tr>
+    <tr><td><code>property.php</code></td><td>~10 KB</td><td>Single-property detail page + booking form.</td></tr>
+    <tr><td><code>dashboard.php</code></td><td>~22 KB</td><td>Owner analytics dashboard (SQL aggregates).</td></tr>
+    <tr><td><code>pricing.php / resources.php</code></td><td>~27 KB ea.</td><td>Static marketing / info pages.</td></tr>
+    <tr><td><code>book.php / contact.php</code></td><td>small</td><td>POST-only form handlers (no UI of their own).</td></tr>
+    <tr><td><code>db.php</code></td><td>&lt;1 KB</td><td>The shared, environment-aware database connection.</td></tr>
+  </table>
+</section>
+
+<!-- ============ 3. ARCHITECTURE ============ -->
+<section class="page">
+  <h2><span class="num">03</span>System Architecture</h2>
+  <p class="lead">One request, three hops: the browser asks Apache, Apache runs the PHP file, the PHP file
+  talks to MySQL, and finished HTML travels back. The same code runs in two environments without edits.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,sans-serif">
+      <!-- browser -->
+      <rect x="20" y="120" width="120" height="80" rx="12" fill="#0B1F3A"/>
+      <text x="80" y="150" fill="#fff" text-anchor="middle" font-size="13" font-weight="700">Browser</text>
+      <text x="80" y="170" fill="#E2C997" text-anchor="middle" font-size="10">guest / host</text>
+      <!-- arrow 1 -->
+      <line x1="140" y1="150" x2="250" y2="150" stroke="#C8A96E" stroke-width="2.5" marker-end="url(#a)"/>
+      <text x="195" y="142" fill="#8A95A3" text-anchor="middle" font-size="9.5">HTTP request</text>
+      <line x1="250" y1="178" x2="140" y2="178" stroke="#1E3F6F" stroke-width="2.5" marker-end="url(#b)"/>
+      <text x="195" y="195" fill="#8A95A3" text-anchor="middle" font-size="9.5">HTML response</text>
+      <!-- server box -->
+      <rect x="250" y="80" width="230" height="170" rx="12" fill="#F7F8FC" stroke="#1E3F6F" stroke-width="1.5"/>
+      <text x="365" y="102" fill="#0B1F3A" text-anchor="middle" font-size="11" font-weight="700">WEB SERVER (Apache / LiteSpeed)</text>
+      <rect x="272" y="118" width="186" height="50" rx="9" fill="#1E3F6F"/>
+      <text x="365" y="138" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">PHP 8 engine</text>
+      <text x="365" y="156" fill="#E2C997" text-anchor="middle" font-size="9.5">index · list · property · book …</text>
+      <rect x="272" y="180" width="186" height="48" rx="9" fill="#C8A96E"/>
+      <text x="365" y="200" fill="#0B1F3A" text-anchor="middle" font-size="11.5" font-weight="700">db.php</text>
+      <text x="365" y="217" fill="#5d4514" text-anchor="middle" font-size="9">auto-detects local vs live</text>
+      <!-- arrow to db -->
+      <line x1="480" y1="150" x2="585" y2="150" stroke="#C8A96E" stroke-width="2.5" marker-end="url(#a)"/>
+      <text x="532" y="142" fill="#8A95A3" text-anchor="middle" font-size="9.5">SQL (mysqli)</text>
+      <line x1="585" y1="178" x2="480" y2="178" stroke="#1E3F6F" stroke-width="2.5" marker-end="url(#b)"/>
+      <text x="532" y="195" fill="#8A95A3" text-anchor="middle" font-size="9.5">rows</text>
+      <!-- db -->
+      <g>
+        <ellipse cx="645" cy="120" rx="50" ry="14" fill="#0B1F3A"/>
+        <rect x="595" y="120" width="100" height="70" fill="#0B1F3A"/>
+        <ellipse cx="645" cy="190" rx="50" ry="14" fill="#152D50"/>
+        <ellipse cx="645" cy="120" rx="50" ry="14" fill="none" stroke="#C8A96E"/>
+        <text x="645" y="158" fill="#fff" text-anchor="middle" font-size="12" font-weight="700">MySQL</text>
+        <text x="645" y="174" fill="#E2C997" text-anchor="middle" font-size="9">3 tables</text>
+      </g>
+      <defs>
+        <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#C8A96E"/></marker>
+        <marker id="b" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1E3F6F"/></marker>
+      </defs>
+      <!-- env labels -->
+      <rect x="250" y="270" width="120" height="34" rx="8" fill="#fff" stroke="#C8A96E"/>
+      <text x="310" y="285" fill="#0B1F3A" text-anchor="middle" font-size="10" font-weight="700">DEV: XAMPP</text>
+      <text x="310" y="298" fill="#8A95A3" text-anchor="middle" font-size="9">localhost · root</text>
+      <rect x="385" y="270" width="135" height="34" rx="8" fill="#fff" stroke="#C8A96E"/>
+      <text x="452" y="285" fill="#0B1F3A" text-anchor="middle" font-size="10" font-weight="700">LIVE: Hostinger</text>
+      <text x="452" y="298" fill="#8A95A3" text-anchor="middle" font-size="9">med-stay.xyz</text>
+    </svg>
+    <div class="figcap">Figure 2 — Request lifecycle. The same files serve both the XAMPP dev box and the Hostinger live host.</div>
+  </div>
+
+  <h3>One connection file, two environments</h3>
+  <p>The trick that makes deployment painless is <code>db.php</code>. It inspects the incoming host name
+  and picks the right credentials at runtime, so the <em>identical</em> file works on both machines — you
+  never edit it before uploading.</p>
+<pre><span class="c">// db.php — auto-selects LOCAL (XAMPP) vs LIVE (Hostinger)</span>
+<span class="k">$isLocal</span> = php_sapi_name() === <span class="s">'cli'</span>
+   || strpos($httpHost, <span class="s">'localhost'</span>) !== false
+   || strpos($httpHost, <span class="s">'127.0.0.1'</span>) !== false;
+
+<span class="k">if</span> ($isLocal) {              <span class="c">// XAMPP</span>
+    $username = <span class="s">'root'</span>;  $password = <span class="s">''</span>;  $database = <span class="s">'medstay'</span>;
+} <span class="k">else</span> {                     <span class="c">// Hostinger</span>
+    $username = <span class="s">'u119737814_…'</span>;  $database = <span class="s">'u119737814_medstay'</span>;
+}
+<span class="k">$conn</span> = <span class="k">new</span> mysqli($host, $username, $password, $database);
+$conn->set_charset(<span class="s">"utf8mb4"</span>);   <span class="c">// emoji + accents safe</span></pre>
+
+  <div class="callout"><strong>Why this matters:</strong> with shared hosting there is no environment-variable
+  panel and no <code>.env</code> tooling. Branching on <code>HTTP_HOST</code> is the simplest reliable way to
+  keep one codebase for two databases.</div>
+</section>
+
+<!-- ============ 4. DATABASE ============ -->
+<section class="page">
+  <h2><span class="num">04</span>Database Design</h2>
+  <p class="lead">Three tables. <code>properties</code> is the catalogue; <code>bookings</code> records reservations
+  and points back to a property; <code>contact_messages</code> stores form submissions.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,sans-serif" font-size="11">
+      <!-- properties -->
+      <g>
+        <rect x="40" y="40" width="190" height="250" rx="8" fill="#fff" stroke="#0B1F3A" stroke-width="1.5"/>
+        <rect x="40" y="40" width="190" height="30" rx="8" fill="#0B1F3A"/>
+        <text x="135" y="60" fill="#fff" text-anchor="middle" font-weight="700" font-size="12.5">properties</text>
+        <text x="52" y="88" fill="#C8A96E" font-weight="700">🔑 id</text><text x="200" y="88" fill="#8A95A3" text-anchor="end">int</text>
+        <text x="52" y="108">title</text><text x="200" y="108" fill="#8A95A3" text-anchor="end">varchar</text>
+        <text x="52" y="128">location</text><text x="200" y="128" fill="#8A95A3" text-anchor="end">varchar</text>
+        <text x="52" y="148">type</text><text x="200" y="148" fill="#8A95A3" text-anchor="end">varchar</text>
+        <text x="52" y="168">beds / baths</text><text x="200" y="168" fill="#8A95A3" text-anchor="end">int</text>
+        <text x="52" y="188">sqm</text><text x="200" y="188" fill="#8A95A3" text-anchor="end">int</text>
+        <text x="52" y="208">price</text><text x="200" y="208" fill="#8A95A3" text-anchor="end">int</text>
+        <text x="52" y="228">rating</text><text x="200" y="228" fill="#8A95A3" text-anchor="end">decimal</text>
+        <text x="52" y="248">badge</text><text x="200" y="248" fill="#8A95A3" text-anchor="end">varchar</text>
+        <text x="52" y="268">image</text><text x="200" y="268" fill="#8A95A3" text-anchor="end">varchar</text>
+      </g>
+      <!-- bookings -->
+      <g>
+        <rect x="300" y="60" width="190" height="200" rx="8" fill="#fff" stroke="#0B1F3A" stroke-width="1.5"/>
+        <rect x="300" y="60" width="190" height="30" rx="8" fill="#1E3F6F"/>
+        <text x="395" y="80" fill="#fff" text-anchor="middle" font-weight="700" font-size="12.5">bookings</text>
+        <text x="312" y="108" fill="#C8A96E" font-weight="700">🔑 id</text><text x="460" y="108" fill="#8A95A3" text-anchor="end">int</text>
+        <text x="312" y="128" fill="#1E3F6F" font-weight="700">🔗 property_id</text><text x="460" y="128" fill="#8A95A3" text-anchor="end">FK</text>
+        <text x="312" y="148">guest_name</text><text x="460" y="148" fill="#8A95A3" text-anchor="end">varchar</text>
+        <text x="312" y="168">guest_email</text><text x="460" y="168" fill="#8A95A3" text-anchor="end">varchar</text>
+        <text x="312" y="188">check_in</text><text x="460" y="188" fill="#8A95A3" text-anchor="end">date</text>
+        <text x="312" y="208">check_out</text><text x="460" y="208" fill="#8A95A3" text-anchor="end">date</text>
+        <text x="312" y="228">created_at</text><text x="460" y="228" fill="#8A95A3" text-anchor="end">ts</text>
+      </g>
+      <!-- relationship line -->
+      <path d="M230 130 H265 V165 H300" fill="none" stroke="#C8A96E" stroke-width="2"/>
+      <circle cx="298" cy="165" r="4" fill="#C8A96E"/>
+      <text x="252" y="123" fill="#8A95A3" font-size="9.5">1</text>
+      <text x="288" y="158" fill="#8A95A3" font-size="9.5">∞</text>
+      <!-- contact -->
+      <g>
+        <rect x="540" y="60" width="160" height="170" rx="8" fill="#fff" stroke="#0B1F3A" stroke-width="1.5"/>
+        <rect x="540" y="60" width="160" height="30" rx="8" fill="#C8A96E"/>
+        <text x="620" y="80" fill="#0B1F3A" text-anchor="middle" font-weight="700" font-size="12">contact_messages</text>
+        <text x="552" y="108" fill="#C8A96E" font-weight="700">🔑 id</text>
+        <text x="552" y="128">first_name</text>
+        <text x="552" y="148">last_name</text>
+        <text x="552" y="168">email</text>
+        <text x="552" y="188">inquiry_type</text>
+        <text x="552" y="208">message</text>
+      </g>
+      <text x="395" y="290" fill="#8A95A3" text-anchor="middle" font-size="10">FK: bookings.property_id → properties.id (ON each booking belongs to one property)</text>
+    </svg>
+    <div class="figcap">Figure 3 — Entity-relationship diagram. One property has many bookings; messages stand alone.</div>
+  </div>
+
+  <h3>Why the relationship matters</h3>
+  <p>The foreign key from <code>bookings.property_id</code> to <code>properties.id</code> is what lets the
+  dashboard join the two tables and compute revenue per property:
+  <code>nights × price</code> summed across every reservation. It also guarantees you can never book a
+  property that doesn't exist.</p>
+
+<pre><span class="c">-- the join that powers the dashboard's revenue figure</span>
+<span class="k">SELECT</span> p.title,
+       COUNT(b.id) <span class="k">AS</span> bookings,
+       SUM(DATEDIFF(b.check_out, b.check_in) * p.price) <span class="k">AS</span> revenue
+<span class="k">FROM</span> properties p
+<span class="k">LEFT JOIN</span> bookings b <span class="k">ON</span> b.property_id = p.id
+<span class="k">GROUP BY</span> p.id
+<span class="k">ORDER BY</span> revenue <span class="k">DESC</span>;</pre>
+
+  <div class="callout"><strong>Data lives in the DB, not the code.</strong> The nine seed properties
+  (Tripoli apartments, Benghazi courtyard houses, Misrata desert camps) are rows in an
+  <code>INSERT</code> statement. Changing a title or price on the live site means running an
+  <code>UPDATE</code> in phpMyAdmin — editing the PHP alone does nothing.</div>
+</section>
+
+<!-- ============ 5. BOOKING ENGINE ============ -->
+<section class="page">
+  <h2><span class="num">05</span>The Booking Engine — Preventing Double-Bookings</h2>
+  <p class="lead">The most interesting piece of logic in the project. Two guests must never reserve the same
+  property for overlapping nights — even if they click "Reserve" at the same instant.</p>
+
+  <h3>The naïve approach (and why it fails)</h3>
+  <p>The obvious method is: <em>check</em> if dates are free, then <em>insert</em> the booking. But between
+  the check and the insert, a second request can sneak in and book the same nights — a classic
+  <strong>race condition</strong>. MEDSTAY avoids the gap entirely by making the check and the insert a
+  <strong>single atomic SQL statement</strong>.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,sans-serif" font-size="11.5">
+      <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1E3F6F"/></marker></defs>
+      <!-- start -->
+      <rect x="290" y="10" width="140" height="34" rx="17" fill="#0B1F3A"/>
+      <text x="360" y="32" fill="#fff" text-anchor="middle" font-weight="700">POST to book.php</text>
+      <line x1="360" y1="44" x2="360" y2="62" stroke="#1E3F6F" stroke-width="2" marker-end="url(#ar)"/>
+      <!-- validate -->
+      <polygon points="360,66 470,103 360,140 250,103" fill="#F8F2E6" stroke="#C8A96E" stroke-width="1.5"/>
+      <text x="360" y="100" text-anchor="middle" font-size="10.5">Valid input?</text>
+      <text x="360" y="114" text-anchor="middle" font-size="9" fill="#8A95A3">email, dates, out&gt;in</text>
+      <line x1="470" y1="103" x2="560" y2="103" stroke="#1E3F6F" stroke-width="2" marker-end="url(#ar)"/>
+      <text x="515" y="96" fill="#b32424" text-anchor="middle" font-size="9.5">no</text>
+      <rect x="560" y="86" width="150" height="34" rx="8" fill="#fdeaea" stroke="#f3c2c2"/>
+      <text x="635" y="107" text-anchor="middle" fill="#b32424" font-size="10">?booked=invalid</text>
+      <line x1="360" y1="140" x2="360" y2="160" stroke="#1E3F6F" stroke-width="2" marker-end="url(#ar)"/>
+      <text x="372" y="154" fill="#1c7a3e" font-size="9.5">yes</text>
+      <!-- atomic insert -->
+      <rect x="225" y="160" width="270" height="64" rx="10" fill="#1E3F6F"/>
+      <text x="360" y="182" fill="#fff" text-anchor="middle" font-weight="700" font-size="11.5">Atomic conditional INSERT</text>
+      <text x="360" y="200" fill="#E2C997" text-anchor="middle" font-size="9.5">INSERT … SELECT … WHERE NOT EXISTS</text>
+      <text x="360" y="214" fill="#E2C997" text-anchor="middle" font-size="9.5">(overlapping booking)</text>
+      <line x1="360" y1="224" x2="360" y2="244" stroke="#1E3F6F" stroke-width="2" marker-end="url(#ar)"/>
+      <!-- decision rows affected -->
+      <polygon points="360,248 480,288 360,328 240,288" fill="#F8F2E6" stroke="#C8A96E" stroke-width="1.5"/>
+      <text x="360" y="285" text-anchor="middle" font-size="10.5">Rows inserted?</text>
+      <text x="360" y="299" text-anchor="middle" font-size="9" fill="#8A95A3">affected_rows</text>
+      <!-- yes -->
+      <line x1="240" y1="288" x2="140" y2="288" stroke="#1E3F6F" stroke-width="2" marker-end="url(#ar)"/>
+      <text x="190" y="281" fill="#1c7a3e" text-anchor="middle" font-size="9.5">1 = booked</text>
+      <rect x="20" y="271" width="120" height="34" rx="8" fill="#e7f6ec" stroke="#b6e0c4"/>
+      <text x="80" y="292" text-anchor="middle" fill="#1c7a3e" font-size="10">?booked=1 ✔</text>
+      <!-- no -->
+      <line x1="480" y1="288" x2="580" y2="288" stroke="#1E3F6F" stroke-width="2" marker-end="url(#ar)"/>
+      <text x="530" y="281" fill="#9a6a12" text-anchor="middle" font-size="9.5">0 = taken</text>
+      <rect x="580" y="271" width="130" height="34" rx="8" fill="#fff4e0" stroke="#f3d9a6"/>
+      <text x="645" y="292" text-anchor="middle" fill="#9a6a12" font-size="9.5">?booked=unavailable</text>
+    </svg>
+    <div class="figcap">Figure 4 — Booking flow. The overlap check and the insert happen in one indivisible statement.</div>
+  </div>
+
+  <h3>The atomic statement</h3>
+  <p>The insert only writes a row when <strong>no existing booking overlaps</strong> the requested range.
+  If a clash exists, zero rows are inserted and <code>affected_rows</code> tells us the dates were taken.</p>
+<pre><span class="k">INSERT INTO</span> bookings (property_id, guest_name, guest_email, check_in, check_out)
+<span class="k">SELECT</span> ?, ?, ?, ?, ?
+<span class="k">FROM</span> DUAL
+<span class="k">WHERE NOT EXISTS</span> (
+    <span class="k">SELECT</span> 1 <span class="k">FROM</span> bookings
+    <span class="k">WHERE</span> property_id = ?
+      <span class="k">AND</span> check_in  &lt; ?   <span class="c">-- existing starts before new ends</span>
+      <span class="k">AND</span> check_out &gt; ?   <span class="c">-- existing ends after new starts</span>
+);</pre>
+
+  <p>The overlap rule — <code>existing.check_in &lt; new.check_out AND existing.check_out &gt; new.check_in</code>
+  — is the standard interval-overlap test. Note it deliberately allows <em>touching</em> dates: one guest's
+  checkout day can be the next guest's check-in day.</p>
+
+  <div class="callout"><strong>Security built in:</strong> every value is bound through a prepared statement
+  (<code>bind_param('issssiss', …)</code>), so guest names and emails can never be interpreted as SQL —
+  injection is structurally impossible here.</div>
+</section>
+
+<!-- ============ 6. BUILD PROCESS ============ -->
+<section class="page">
+  <h2><span class="num">06</span>The Build Process, Step by Step</h2>
+  <p class="lead">How the project went from an empty folder to a working booking site.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,sans-serif">
+      <line x1="40" y1="75" x2="680" y2="75" stroke="#C8A96E" stroke-width="3"/>
+      <g font-size="10.5" text-anchor="middle">
+        <circle cx="70" cy="75" r="9" fill="#0B1F3A"/><text x="70" y="79" fill="#fff" font-size="10">1</text>
+        <text x="70" y="48" fill="#0B1F3A" font-weight="700">Design</text><text x="70" y="105" fill="#8A95A3">palette &amp; fonts</text>
+        <circle cx="190" cy="75" r="9" fill="#0B1F3A"/><text x="190" y="79" fill="#fff" font-size="10">2</text>
+        <text x="190" y="48" fill="#0B1F3A" font-weight="700">Database</text><text x="190" y="105" fill="#8A95A3">3 tables + seed</text>
+        <circle cx="310" cy="75" r="9" fill="#0B1F3A"/><text x="310" y="79" fill="#fff" font-size="10">3</text>
+        <text x="310" y="48" fill="#0B1F3A" font-weight="700">Connect</text><text x="310" y="105" fill="#8A95A3">db.php</text>
+        <circle cx="430" cy="75" r="9" fill="#0B1F3A"/><text x="430" y="79" fill="#fff" font-size="10">4</text>
+        <text x="430" y="48" fill="#0B1F3A" font-weight="700">Pages</text><text x="430" y="105" fill="#8A95A3">index/list/property</text>
+        <circle cx="550" cy="75" r="9" fill="#0B1F3A"/><text x="550" y="79" fill="#fff" font-size="10">5</text>
+        <text x="550" y="48" fill="#0B1F3A" font-weight="700">Handlers</text><text x="550" y="105" fill="#8A95A3">book/contact</text>
+        <circle cx="660" cy="75" r="9" fill="#C8A96E"/><text x="660" y="79" fill="#0B1F3A" font-size="10">6</text>
+        <text x="660" y="48" fill="#0B1F3A" font-weight="700">Deploy</text><text x="660" y="105" fill="#8A95A3">Hostinger</text>
+      </g>
+    </svg>
+    <div class="figcap">Figure 5 — Build timeline.</div>
+  </div>
+
+  <h3>1 · Establish the design language</h3>
+  <p>Before any logic, the visual identity was fixed: a navy (<code>#0B1F3A</code>) and gold
+  (<code>#C8A96E</code>) palette, Reem Kufi for headings, Tajawal for body. These live as CSS variables
+  (<code>:root { --navy … }</code>) repeated at the top of every page so the look stays consistent.</p>
+
+  <h3>2 · Model the data in MySQL</h3>
+  <p>Three tables were created in phpMyAdmin and seeded with nine real-feeling Libyan properties. The
+  schema (and seed rows) is captured in <code>medstay.sql</code> so the whole database can be rebuilt
+  from one file.</p>
+
+  <h3>3 · Build the shared connection</h3>
+  <p><code>db.php</code> was written once with the local-vs-live auto-detection, then <code>include</code>d
+  at the top of every page that touches data.</p>
+
+  <h3>4 · Render the pages from data</h3>
+  <p>Each page queries the database and loops over the results to print cards or detail blocks. All
+  output goes through <code>htmlspecialchars()</code> to prevent broken markup and XSS.</p>
+
+  <h3>5 · Wire up the form handlers</h3>
+  <p><code>book.php</code> and <code>contact.php</code> are POST-only endpoints. They validate, write to the
+  database with prepared statements, then redirect back with a status flag in the URL
+  (<code>?booked=1</code>, <code>?sent=error</code>) that the page reads to show a coloured alert — the
+  <strong>Post/Redirect/Get</strong> pattern, which stops a refresh from re-submitting a booking.</p>
+
+  <h3>6 · Deploy</h3>
+  <p>Files are uploaded through Hostinger's File Manager; database changes are run in phpMyAdmin's SQL
+  tab. Because <code>db.php</code> self-detects, nothing in the code changes between dev and live.</p>
+</section>
+
+<!-- ============ 7. DEPLOY + LESSONS ============ -->
+<section class="page">
+  <h2><span class="num">07</span>Deployment Workflow &amp; Lessons Learned</h2>
+
+  <div class="fig">
+    <svg viewBox="0 0 720 170" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,sans-serif" font-size="11">
+      <defs><marker id="d" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#C8A96E"/></marker></defs>
+      <rect x="20" y="55" width="150" height="60" rx="10" fill="#0B1F3A"/>
+      <text x="95" y="80" fill="#fff" text-anchor="middle" font-weight="700">Local XAMPP</text>
+      <text x="95" y="98" fill="#E2C997" text-anchor="middle" font-size="9.5">edit &amp; test</text>
+      <line x1="170" y1="85" x2="270" y2="85" stroke="#C8A96E" stroke-width="2.5" marker-end="url(#d)"/>
+      <text x="220" y="76" fill="#8A95A3" text-anchor="middle" font-size="9">upload</text>
+      <rect x="270" y="30" width="170" height="50" rx="10" fill="#1E3F6F"/>
+      <text x="355" y="52" fill="#fff" text-anchor="middle" font-weight="700" font-size="10.5">File Manager</text>
+      <text x="355" y="68" fill="#E2C997" text-anchor="middle" font-size="9">→ public_html (PHP/CSS)</text>
+      <rect x="270" y="92" width="170" height="50" rx="10" fill="#C8A96E"/>
+      <text x="355" y="114" fill="#0B1F3A" text-anchor="middle" font-weight="700" font-size="10.5">phpMyAdmin</text>
+      <text x="355" y="130" fill="#5d4514" text-anchor="middle" font-size="9">→ run SQL changes</text>
+      <line x1="440" y1="85" x2="545" y2="85" stroke="#C8A96E" stroke-width="2.5" marker-end="url(#d)"/>
+      <rect x="545" y="55" width="155" height="60" rx="10" fill="#0B1F3A"/>
+      <text x="622" y="80" fill="#fff" text-anchor="middle" font-weight="700">med-stay.xyz</text>
+      <text x="622" y="98" fill="#E2C997" text-anchor="middle" font-size="9.5">live on Hostinger</text>
+    </svg>
+    <div class="figcap">Figure 6 — Deploy path. Code and data travel through two separate channels.</div>
+  </div>
+
+  <h3>The two-channel rule</h3>
+  <p>Code and data are deployed <strong>separately</strong>. Uploading new PHP does <em>not</em> update the
+  live database, and vice-versa. Because card content (cities, types, titles) comes from the database, a
+  text change often means <strong>both</strong> a file upload and a phpMyAdmin <code>UPDATE</code>.</p>
+
+  <h3>Gotchas that cost real time</h3>
+  <table>
+    <tr><th>Problem</th><th>Cause</th><th>Fix</th></tr>
+    <tr><td>Hero video 404 on live, fine locally</td><td>Linux is case-sensitive; path was <code>Videos/beach.mp4</code> with a capital V</td><td>Match filename casing exactly on the server</td></tr>
+    <tr><td><code>localhost</code> connection fails</td><td>On the dev box <code>localhost</code> resolves to IPv6</td><td>Use <code>127.0.0.1</code> in <code>db.php</code></td></tr>
+    <tr><td>Edits "don't show up" live</td><td>LiteSpeed page cache served a stale copy</td><td><code>.htaccess</code> disables the cache for PHP pages</td></tr>
+    <tr><td>Text edit had no effect</td><td>That text is DB-driven, not in the PHP</td><td>Run the matching <code>UPDATE</code> on the live DB too</td></tr>
+  </table>
+
+  <h3>The cache-busting .htaccess</h3>
+<pre><span class="c"># Disable LiteSpeed cache + tell browsers not to cache PHP</span>
+&lt;IfModule LiteSpeed&gt;
+    CacheDisable public /
+&lt;/IfModule&gt;
+&lt;FilesMatch <span class="s">"\.php$"</span>&gt;
+    Header set Cache-Control <span class="s">"no-store, no-cache, must-revalidate"</span>
+&lt;/FilesMatch&gt;</pre>
+
+  <h3>What the stack does well</h3>
+  <ul>
+    <li><strong>Zero build step</strong> — deploy by copying files.</li>
+    <li><strong>One codebase, two environments</strong> via host-based detection.</li>
+    <li><strong>Safe by construction</strong> — prepared statements everywhere, output escaped.</li>
+    <li><strong>Race-proof bookings</strong> — overlap check and insert are atomic.</li>
+  </ul>
+
+  <div class="callout"><strong>Where it would go next:</strong> host authentication for the dashboard
+  (currently open), image uploads for host-submitted properties, an Arabic / RTL edition (the fonts already
+  support it), and email confirmations on booking.</div>
+
+  <p style="margin-top:26px; text-align:center; color:var(--gray); font-size:.85rem;">
+  — End of document · MEDSTAY build walkthrough —</p>
+</section>
+
+</body>
+</html>

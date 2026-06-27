@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MEDSTAY — Sun &amp; Clay · Visual System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Hanken+Grotesk:wght@300..800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   MEDSTAY · "Sun & Clay" — Mediterranean editorial system
+   A self-contained styleguide. Open directly in a browser.
+   ============================================================ */
+
+:root{
+  /* — Surfaces (sun-bleached plaster) — */
+  --bone:        #F4ECDD;   /* primary paper            */
+  --bone-deep:   #EBDFC9;   /* sunk panels              */
+  --bone-edge:   #DCCDB0;   /* hairlines on paper       */
+  --plaster:     #FBF6EC;   /* raised cards             */
+
+  /* — Ink (warm espresso) — */
+  --ink:         #241A12;
+  --ink-soft:    #5C4E3F;
+  --ink-faint:   #8A7B68;
+
+  /* — Pigments — */
+  --clay:        #C5522E;   /* terracotta · primary     */
+  --clay-deep:   #9A3A1E;
+  --clay-glow:   #E2754C;
+  --cypress:     #38503C;   /* olive-cypress · secondary*/
+  --cypress-soft:#5A7359;
+  --saffron:     #E0A036;   /* spice · highlight        */
+  --indigo:      #2C3A52;   /* night sky · contrast ink */
+
+  /* — Tokens — */
+  --r-sm: 6px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-arch: 999px 999px 14px 14px;   /* Moroccan arch top */
+  --shadow-soft: 0 1px 0 rgba(255,255,255,.6) inset, 0 18px 40px -24px rgba(36,26,18,.55);
+  --shadow-lift: 0 1px 0 rgba(255,255,255,.6) inset, 0 34px 60px -28px rgba(36,26,18,.6);
+  --ease: cubic-bezier(.22,1,.36,1);
+
+  --sans: 'Hanken Grotesk', system-ui, sans-serif;
+  --serif: 'Fraunces', Georgia, serif;
+  --mono: 'Space Mono', ui-monospace, monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  background:var(--bone);
+  color:var(--ink);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* Paper grain + warm vignette over everything */
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;opacity:.05;
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
+  background:radial-gradient(120% 80% at 50% -10%, transparent 55%, rgba(154,58,30,.07) 100%);
+}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 40px}
+
+/* ============================================================ MASTHEAD */
+.masthead{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(140% 120% at 85% -20%, rgba(224,160,54,.22), transparent 50%),
+    linear-gradient(180deg, var(--bone) 0%, var(--bone-deep) 100%);
+  border-bottom:1px solid var(--bone-edge);
+  padding:34px 0 0;
+}
+/* faint sun disc */
+.masthead .sun{
+  position:absolute;top:-180px;right:-120px;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle, rgba(224,160,54,.5), rgba(197,82,46,.18) 45%, transparent 70%);
+  filter:blur(8px);pointer-events:none;
+}
+.top-rule{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-soft);padding-bottom:30px;border-bottom:1px solid var(--bone-edge);
+}
+.top-rule b{color:var(--clay-deep);font-weight:700}
+.mast-body{padding:56px 0 70px;position:relative;z-index:2}
+.eyebrow{
+  font-family:var(--mono);font-size:.75rem;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--clay-deep);margin-bottom:26px;display:flex;align-items:center;gap:14px;
+}
+.eyebrow::before{content:'';width:46px;height:1px;background:var(--clay)}
+.mast-title{
+  font-family:var(--serif);
+  font-weight:340;
+  font-size:clamp(3.2rem,9vw,7.5rem);
+  line-height:.92;letter-spacing:-.02em;
+  font-variation-settings:'opsz' 144,'SOFT' 30,'WONK' 1;
+}
+.mast-title em{
+  font-style:italic;color:var(--clay);
+  font-variation-settings:'opsz' 144,'SOFT' 60,'WONK' 1;
+}
+.mast-sub{
+  margin-top:30px;max-width:540px;font-size:1.12rem;color:var(--ink-soft);
+}
+.mast-meta{
+  margin-top:44px;display:flex;flex-wrap:wrap;gap:14px 10px;
+}
+.chip{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;
+  padding:8px 14px;border:1px solid var(--bone-edge);border-radius:var(--r-sm);
+  color:var(--ink-soft);background:rgba(251,246,236,.5);
+}
+.chip span{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:middle}
+
+/* reveal-on-load */
+.r{opacity:0;transform:translateY(22px);animation:rise .9s var(--ease) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.d1{animation-delay:.05s}.d2{animation-delay:.16s}.d3{animation-delay:.28s}.d4{animation-delay:.4s}.d5{animation-delay:.52s}
+
+/* ============================================================ SECTIONS */
+section.block{padding:84px 0;border-bottom:1px solid var(--bone-edge)}
+.sec-head{display:flex;align-items:baseline;gap:20px;margin-bottom:46px}
+.sec-no{font-family:var(--mono);font-size:.8rem;color:var(--clay);letter-spacing:.1em}
+.sec-name{
+  font-family:var(--serif);font-weight:400;font-size:2rem;letter-spacing:-.01em;
+  font-variation-settings:'opsz' 40,'SOFT' 20;
+}
+.sec-line{flex:1;height:1px;background:var(--bone-edge)}
+.sec-note{font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);letter-spacing:.04em}
+
+/* ---- Color ---- */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px}
+.sw{
+  border-radius:var(--r-md);overflow:hidden;border:1px solid var(--bone-edge);
+  background:var(--plaster);box-shadow:var(--shadow-soft);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+}
+.sw:hover{transform:translateY(-5px);box-shadow:var(--shadow-lift)}
+.sw .cap{height:96px;display:flex;align-items:flex-end;padding:12px}
+.sw .cap small{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;padding:3px 7px;border-radius:4px;background:rgba(255,255,255,.78);color:var(--ink)}
+.sw .info{padding:13px 14px 15px}
+.sw .info b{display:block;font-size:.92rem;font-weight:600}
+.sw .info code{font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)}
+
+/* ---- Type ---- */
+.type-row{display:flex;align-items:baseline;gap:26px;padding:22px 0;border-top:1px solid var(--bone-edge);flex-wrap:wrap}
+.type-row:first-child{border-top:none}
+.type-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--ink-faint);width:120px;flex-shrink:0;text-transform:uppercase}
+.spec-display{font-family:var(--serif);font-weight:330;font-size:clamp(2.4rem,5vw,3.7rem);line-height:1;letter-spacing:-.02em;font-variation-settings:'opsz' 144,'SOFT' 40,'WONK' 1}
+.spec-display em{font-style:italic;color:var(--clay)}
+.spec-h{font-family:var(--serif);font-weight:480;font-size:1.65rem;font-variation-settings:'opsz' 32}
+.spec-lead{font-size:1.22rem;color:var(--ink-soft);max-width:560px}
+.spec-body{font-size:1rem;max-width:560px;color:var(--ink-soft)}
+.spec-label{font-family:var(--mono);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--clay-deep)}
+
+/* ---- Buttons & controls ---- */
+.lab{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:30px}
+.btn{
+  font-family:var(--sans);font-weight:600;font-size:.95rem;letter-spacing:.01em;
+  padding:14px 26px;border-radius:var(--r-sm);border:1px solid transparent;cursor:pointer;
+  display:inline-flex;align-items:center;gap:10px;transition:.25s var(--ease);
+}
+.btn .arr{transition:transform .25s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+.btn-primary{background:var(--clay);color:#FBF6EC;box-shadow:0 12px 24px -12px rgba(154,58,30,.8)}
+.btn-primary:hover{background:var(--clay-deep);transform:translateY(-2px)}
+.btn-ink{background:var(--ink);color:var(--bone)}
+.btn-ink:hover{background:var(--indigo);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink);}
+.btn-ghost:hover{background:var(--ink);color:var(--bone)}
+.btn-quiet{background:transparent;color:var(--clay-deep);padding:14px 6px;border-bottom:2px solid var(--clay)}
+.btn-quiet:hover{color:var(--clay)}
+
+.field{display:flex;flex-direction:column;gap:8px;max-width:340px}
+.field label{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+.field input,.field select{
+  font-family:var(--sans);font-size:.98rem;color:var(--ink);
+  padding:13px 15px;border-radius:var(--r-sm);border:1px solid var(--bone-edge);
+  background:var(--plaster);outline:none;transition:.2s;
+}
+.field input:focus,.field select:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(197,82,46,.14)}
+.field input::placeholder{color:var(--ink-faint)}
+
+/* badges */
+.badges{display:flex;gap:12px;flex-wrap:wrap}
+.bdg{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:30px}
+.bdg-clay{background:var(--clay);color:#FBF6EC}
+.bdg-saffron{background:var(--saffron);color:var(--ink)}
+.bdg-cypress{background:var(--cypress);color:#EAF0E6}
+.bdg-outline{background:transparent;border:1px solid var(--ink);color:var(--ink)}
+
+/* ============================================================ THE CARD */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:30px}
+.pcard{
+  background:var(--plaster);border:1px solid var(--bone-edge);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:var(--shadow-soft);cursor:pointer;
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease);
+  display:flex;flex-direction:column;
+}
+.pcard:hover{transform:translateY(-8px);box-shadow:var(--shadow-lift)}
+.pcard-img{position:relative;height:230px;overflow:hidden;margin:10px 10px 0;border-radius:var(--r-md) var(--r-md) var(--r-md) var(--r-md)}
+.pcard-img::before{content:'';position:absolute;inset:0;z-index:2;
+  background:linear-gradient(180deg,transparent 55%,rgba(36,26,18,.45));pointer-events:none}
+.pcard-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease);display:block}
+.pcard:hover .pcard-img img{transform:scale(1.07)}
+.pcard-badge{position:absolute;top:14px;left:14px;z-index:3}
+.pcard-fav{
+  position:absolute;top:14px;right:14px;z-index:3;width:38px;height:38px;border-radius:50%;
+  background:rgba(251,246,236,.92);display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;color:var(--clay);border:none;cursor:pointer;transition:.2s;backdrop-filter:blur(4px);
+}
+.pcard-fav:hover{transform:scale(1.14)}
+.pcard-loc{
+  position:absolute;left:14px;bottom:12px;z-index:3;color:#FBF6EC;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;text-shadow:0 1px 6px rgba(0,0,0,.5);
+}
+.pcard-body{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1}
+.pcard-title{
+  font-family:var(--serif);font-weight:430;font-size:1.32rem;line-height:1.2;letter-spacing:-.01em;
+  font-variation-settings:'opsz' 28,'SOFT' 18;margin-bottom:14px;
+}
+.pcard-meta{display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);letter-spacing:.04em;margin-bottom:18px}
+.pcard-meta span{padding:4px 9px;border:1px solid var(--bone-edge);border-radius:30px}
+.pcard-foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;padding-top:16px;border-top:1px solid var(--bone-edge)}
+.pcard-price b{font-family:var(--serif);font-size:1.5rem;font-weight:520;font-variation-settings:'opsz' 30}
+.pcard-price small{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);letter-spacing:.06em}
+.pcard-rate{display:flex;align-items:center;gap:5px;font-weight:600;font-size:.9rem}
+.pcard-rate .st{color:var(--saffron)}
+
+/* ============================================================ HERO PREVIEW */
+.hero-demo{
+  position:relative;border-radius:var(--r-lg);overflow:hidden;min-height:540px;
+  display:flex;align-items:flex-end;border:1px solid var(--bone-edge);box-shadow:var(--shadow-lift);
+  background:linear-gradient(160deg,var(--indigo),var(--cypress));
+}
+.hero-demo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.62;mix-blend-mode:luminosity}
+.hero-demo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,15,30,.15),rgba(20,15,30,.78))}
+.hero-arch{
+  position:absolute;top:36px;left:50%;transform:translateX(-50%);z-index:3;
+  width:160px;height:210px;border:1.5px solid rgba(244,236,221,.4);
+  border-radius:var(--r-arch);
+}
+.hero-inner{position:relative;z-index:4;padding:54px;color:var(--bone);max-width:680px}
+.hero-inner .eyebrow{color:var(--saffron)}
+.hero-inner .eyebrow::before{background:var(--saffron)}
+.hero-demo h2{
+  font-family:var(--serif);font-weight:330;font-size:clamp(2.6rem,5.5vw,4.4rem);line-height:.98;
+  letter-spacing:-.02em;font-variation-settings:'opsz' 120,'SOFT' 40,'WONK' 1;color:#FBF6EC;
+}
+.hero-demo h2 em{font-style:italic;color:var(--clay-glow)}
+.hero-demo p{margin-top:20px;color:rgba(244,236,221,.82);max-width:440px;font-size:1.06rem}
+.hero-search{
+  margin-top:34px;display:flex;gap:8px;flex-wrap:wrap;background:rgba(251,246,236,.95);
+  padding:8px;border-radius:var(--r-md);box-shadow:0 20px 50px -20px rgba(0,0,0,.6);max-width:560px;
+}
+.hero-search .hf{flex:1;min-width:130px;padding:8px 12px}
+.hero-search .hf label{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:3px}
+.hero-search .hf input,.hero-search .hf select{border:none;outline:none;background:transparent;font-family:var(--sans);font-size:.92rem;color:var(--ink);width:100%}
+
+/* ============================================================ FOOTER */
+.colophon{padding:70px 0 90px;background:var(--ink);color:var(--bone-edge)}
+.colophon .wrap{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:30px}
+.colophon .mark{font-family:var(--serif);font-size:2.4rem;font-weight:360;color:var(--bone);font-variation-settings:'opsz' 60,'SOFT' 30}
+.colophon .mark em{font-style:italic;color:var(--clay-glow)}
+.colophon p{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;color:var(--ink-faint);max-width:320px;line-height:1.8}
+.colophon .stamp{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--clay-glow);text-align:right}
+
+@media(max-width:720px){
+  .wrap{padding:0 22px}
+  .type-row{gap:8px}.type-tag{width:auto}
+  .hero-inner{padding:32px 26px}
+  .colophon .wrap{align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================== MASTHEAD ============================== -->
+<header class="masthead">
+  <div class="sun"></div>
+  <div class="wrap">
+    <div class="top-rule">
+      <span>MEDSTAY · <b>Visual System</b></span>
+      <span>Ed. 01 — Sun &amp; Clay</span>
+      <span>Mediterranean Editorial</span>
+    </div>
+    <div class="mast-body">
+      <div class="eyebrow r d1">The Stays Brand Book</div>
+      <h1 class="mast-title r d2">Sun,<br><em>Clay</em> &amp; Plaster.</h1>
+      <p class="mast-sub r d3">A warm, sun-bleached identity for handpicked Mediterranean stays — terracotta riads, cypress courtyards, and yurts under the saffron dusk. Built to feel printed, not generated.</p>
+      <div class="mast-meta r d4">
+        <span class="chip"><span style="background:var(--clay)"></span>Terracotta primary</span>
+        <span class="chip"><span style="background:var(--cypress)"></span>Cypress secondary</span>
+        <span class="chip"><span style="background:var(--saffron)"></span>Saffron highlight</span>
+        <span class="chip">Fraunces · Hanken Grotesk · Space Mono</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ========================= 01 · COLOR ========================= -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2 class="sec-name">Palette</h2>
+      <span class="sec-line"></span>
+      <span class="sec-note">earth · pigment · spice</span>
+    </div>
+    <div class="swatches">
+      <div class="sw"><div class="cap" style="background:var(--bone)"><small>surface</small></div><div class="info"><b>Plaster</b><code>#F4ECDD</code></div></div>
+      <div class="sw"><div class="cap" style="background:var(--bone-deep)"><small>panel</small></div><div class="info"><b>Sunk Plaster</b><code>#EBDFC9</code></div></div>
+      <div class="sw"><div class="cap" style="background:var(--ink)"><small style="color:#fff;background:rgba(0,0,0,.3)">ink</small></div><div class="info"><b>Espresso</b><code>#241A12</code></div></div>
+      <div class="sw"><div class="cap" style="background:var(--clay)"><small>primary</small></div><div class="info"><b>Terracotta</b><code>#C5522E</code></div></div>
+      <div class="sw"><div class="cap" style="background:var(--cypress)"><small style="color:#fff;background:rgba(0,0,0,.25)">secondary</small></div><div class="info"><b>Cypress</b><code>#38503C</code></div></div>
+      <div class="sw"><div class="cap" style="background:var(--saffron)"><small>highlight</small></div><div class="info"><b>Saffron</b><code>#E0A036</code></div></div>
+      <div class="sw"><div class="cap" style="background:var(--indigo)"><small style="color:#fff;background:rgba(0,0,0,.25)">night</small></div><div class="info"><b>Indigo Dusk</b><code>#2C3A52</code></div></div>
+      <div class="sw"><div class="cap" style="background:var(--clay-glow)"><small>glow</small></div><div class="info"><b>Clay Glow</b><code>#E2754C</code></div></div>
+    </div>
+  </section>
+
+  <!-- ========================= 02 · TYPE ========================= -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="sec-no">02</span>
+      <h2 class="sec-name">Typography</h2>
+      <span class="sec-line"></span>
+      <span class="sec-note">Fraunces · Hanken Grotesk · Space Mono</span>
+    </div>
+    <div class="type-row"><span class="type-tag">Display / 144</span><div class="spec-display">Stay <em>somewhere</em> true</div></div>
+    <div class="type-row"><span class="type-tag">Heading / 32</span><div class="spec-h">Curved-balcony studio, old-town views</div></div>
+    <div class="type-row"><span class="type-tag">Lead / 20</span><p class="spec-lead">Handpicked properties from trusted hosts — sun-drenched riads to starlit yurts.</p></div>
+    <div class="type-row"><span class="type-tag">Body / 16</span><p class="spec-body">Every listing passes a review for authenticity and quality, so the photos you see match the plaster you sleep beneath. Filter by place, pigment of the season, and price.</p></div>
+    <div class="type-row"><span class="type-tag">Label / mono</span><span class="spec-label">From $95 / night · Marrakech</span></div>
+  </section>
+
+  <!-- ========================= 03 · CONTROLS ========================= -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <h2 class="sec-name">Buttons &amp; Fields</h2>
+      <span class="sec-line"></span>
+      <span class="sec-note">interaction</span>
+    </div>
+    <div class="lab">
+      <button class="btn btn-primary">Reserve this stay <span class="arr">→</span></button>
+      <button class="btn btn-ink">Become a host <span class="arr">→</span></button>
+      <button class="btn btn-ghost">View gallery</button>
+      <button class="btn btn-quiet">All listings <span class="arr">→</span></button>
+    </div>
+    <div class="lab" style="align-items:flex-start;gap:30px">
+      <div class="field"><label>Where to</label><input type="text" placeholder="Marrakech, Beirut, rural…"/></div>
+      <div class="field"><label>Property type</label><select><option>Any type</option><option>Riad</option><option>Villa</option><option>Yurt</option><option>Studio</option></select></div>
+    </div>
+    <div class="badges">
+      <span class="bdg bdg-clay">Featured</span>
+      <span class="bdg bdg-saffron">Popular</span>
+      <span class="bdg bdg-cypress">Unique Stay</span>
+      <span class="bdg bdg-outline">New</span>
+    </div>
+  </section>
+
+  <!-- ========================= 04 · THE CARD ========================= -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="sec-no">04</span>
+      <h2 class="sec-name">Property Card</h2>
+      <span class="sec-line"></span>
+      <span class="sec-note">the workhorse component</span>
+    </div>
+    <div class="cards">
+
+      <article class="pcard">
+        <div class="pcard-img">
+          <span class="pcard-badge bdg bdg-saffron">Unique Stay</span>
+          <button class="pcard-fav">♡</button>
+          <img src="images/prop7.jpg" alt="Stargazer Yurt" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(150deg,var(--indigo),var(--cypress))'"/>
+          <span class="pcard-loc">◍ Rural Morocco</span>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-title">Stargazer Yurt — Milky Way Views</h3>
+          <div class="pcard-meta"><span>1 Bed</span><span>1 Bath</span><span>35 m²</span></div>
+          <div class="pcard-foot">
+            <div class="pcard-price"><b>$110</b> <small>/ night</small></div>
+            <div class="pcard-rate"><span class="st">★</span> 5.0</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <div class="pcard-img">
+          <span class="pcard-badge bdg bdg-clay">Featured</span>
+          <button class="pcard-fav">♡</button>
+          <img src="images/prop4.jpg" alt="Luxury Riad" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(150deg,var(--clay-deep),var(--saffron))'"/>
+          <span class="pcard-loc">◍ Marrakech, Morocco</span>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-title">Luxury Riad with Moroccan Lanterns</h3>
+          <div class="pcard-meta"><span>4 Beds</span><span>3 Baths</span><span>200 m²</span></div>
+          <div class="pcard-foot">
+            <div class="pcard-price"><b>$350</b> <small>/ night</small></div>
+            <div class="pcard-rate"><span class="st">★</span> 4.9</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <div class="pcard-img">
+          <span class="pcard-badge bdg bdg-cypress">Popular</span>
+          <button class="pcard-fav">♡</button>
+          <img src="images/prop9.jpg" alt="Stone Villa" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(150deg,var(--cypress),var(--ink))'"/>
+          <span class="pcard-loc">◍ Rural Lebanon</span>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-title">Rustic Stone Villa, Arched Windows</h3>
+          <div class="pcard-meta"><span>3 Beds</span><span>2 Baths</span><span>160 m²</span></div>
+          <div class="pcard-foot">
+            <div class="pcard-price"><b>$165</b> <small>/ night</small></div>
+            <div class="pcard-rate"><span class="st">★</span> 4.7</div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ========================= 05 · HERO IN SITU ========================= -->
+  <section class="block" style="border-bottom:none">
+    <div class="sec-head">
+      <span class="sec-no">05</span>
+      <h2 class="sec-name">Hero, in situ</h2>
+      <span class="sec-line"></span>
+      <span class="sec-note">the system, assembled</span>
+    </div>
+    <div class="hero-demo">
+      <img src="images/prop2.jpg" alt="" onerror="this.style.display='none'"/>
+      <div class="hero-arch"></div>
+      <div class="hero-inner">
+        <div class="eyebrow">Where hosts meet guests</div>
+        <h2>Find a stay<br>with a <em>soul</em>.</h2>
+        <p>From terracotta riads to penthouses over the old town — verified hosts, honest photos, instant booking.</p>
+        <div class="hero-search">
+          <div class="hf"><label>Where</label><input type="text" placeholder="Anywhere warm"/></div>
+          <div class="hf"><label>Check in</label><input type="date"/></div>
+          <div class="hf"><label>Type</label><select><option>Any</option><option>Riad</option><option>Yurt</option></select></div>
+          <button class="btn btn-primary" style="border-radius:var(--r-sm)">Search</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================== COLOPHON ============================== -->
+<footer class="colophon">
+  <div class="wrap">
+    <div>
+      <div class="mark">MED<em>STAY</em></div>
+      <p>Sun &amp; Clay — Visual System, Edition 01. Set in Fraunces, Hanken Grotesk &amp; Space Mono. A standalone prototype; no PHP was harmed.</p>
+    </div>
+    <div class="stamp">Approved for review<br>2026 · the Mediterranean</div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.pcard-fav').forEach(b=>{
+    b.addEventListener('click',e=>{e.stopPropagation();b.textContent=b.textContent==='♡'?'♥':'♡';});
+  });
+</script>
+</body>
+</html>
